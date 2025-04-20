@@ -1,0 +1,63 @@
+import random
+import time
+
+class SmartWasteBin:
+    def __init__(self):
+        self.organic_waste = 0
+        self.non_bio_waste = 0
+        self.rewards_ledger = {}
+        self.total_volume = 0  # Simulated volume in liters
+        self.capacity = 100  # Max capacity of the bin in liters
+
+    def classify_waste(self):
+        # Simulated AI classifier
+        return random.choice(['organic', 'non-biodegradable'])
+
+    def insert_waste(self, user_id):
+        waste_type = self.classify_waste()
+        print(f"Detected: {waste_type} waste")
+
+        if waste_type == 'organic':
+            self.organic_waste += 1
+            self.total_volume += 1
+            self.decompose()
+        else:
+            self.non_bio_waste += 1
+            self.total_volume += 2  # Non-bio takes more space
+            self.compress()
+
+        self.reward_user(user_id)
+        self.check_fill_status()
+
+    def decompose(self):
+        print("🧪 Bio-decomposing organic waste...")
+        time.sleep(1)
+        self.organic_waste = max(0, self.organic_waste - 1)
+        self.total_volume = max(0, self.total_volume - 1)
+
+    def compress(self):
+        print("🗜️ Compressing non-biodegradable waste...")
+        time.sleep(1)
+        self.total_volume *= 0.9  # Simulate 10% volume reduction
+
+    def reward_user(self, user_id):
+        if user_id not in self.rewards_ledger:
+            self.rewards_ledger[user_id] = 0
+        self.rewards_ledger[user_id] += 1
+        print(f"🎉 Reward granted to user {user_id} | Total: {self.rewards_ledger[user_id]} tokens")
+
+    def check_fill_status(self):
+        percent_full = (self.total_volume / self.capacity) * 100
+        print(f"📊 Bin fill level: {percent_full:.2f}%")
+        if percent_full > 90:
+            print("⚠️ Alert: Bin almost full! Notify collection system.")
+        print("-" * 40)
+
+# Simulate usage
+smart_bin = SmartWasteBin()
+
+# Simulate 10 users inserting waste
+for i in range(10):
+    user_id = f"user_{random.randint(1, 3)}"
+    smart_bin.insert_waste(user_id)
+    time.sleep(0.5)
